@@ -9,18 +9,22 @@
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "lint": "tslint -p tsconfig.json",
-    "prepare" : "npm run build",
-    "prepublishOnly" : "npm test && npm run lint",
-    "preversion" : "npm run lint",
-    "version" : "npm run format && git add -A src",
-    "postversion" : "git push && git push --tags"
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test && npm run lint",
+    "preversion": "npm run lint",
+    "version": "npm run format && git add -A src",
+    "postversion": "git push && git push --tags"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jaymeh/codebase-npm.git"
   },
-  "keywords": ["CodebaseHQ", "Codebase", "Time Tracking"],
-   "author": "C-J",
+  "keywords": [
+    "CodebaseHQ",
+    "Codebase",
+    "Time Tracking"
+  ],
+  "author": "C-J",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/jaymeh/codebase-npm/issues"
@@ -37,5 +41,8 @@
   },
   "files": [
     "lib/**/*"
-  ]
+  ],
+  "dependencies": {
+    "axios": "^0.18.0"
+  }
 }
