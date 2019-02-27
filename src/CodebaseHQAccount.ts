@@ -1,30 +1,54 @@
 import CodebaseHQConnector from "./CodebaseHQConnector";
+import ProjectCollection from "./Project/ProjectCollection";
+import UserCollection from "./User/UserCollection";
 
-export default class CodebaseHQAccount extends CodebaseHQConnector{
+export default class CodebaseHQAccount extends CodebaseHQConnector {
+    private projectCollection: ProjectCollection;
+    private userCollection: UserCollection;
+
     constructor(apiUser: string, apiKey: string, apiHostname: string) {
         super(apiUser, apiKey, apiHostname);
-    }
-    /**
-//      * Constructor
-//      * @param string $apiUser
-//      * @param string $apiKey
-//      * @param string $apiHostname
-//      * @return void
-//      */
-//     public function __construct(
-//         $apiUser,
-//         $apiKey,
-//         $apiHostname
-//     ) {
-//         parent::__construct(
-//             $apiUser,
-//             $apiKey,
-//             $apiHostname
-//         );
 
-//         $this->projectCollection = new Project\Collection();
-//         $this->userCollection = new User\Collection();
-//     }
+        this.projectCollection = new ProjectCollection();
+        this.userCollection = new UserCollection();
+    }
+
+    /**
+     * Returns a collection of all projects
+     * @return Project\Collection
+     */
+    async projects()
+    {
+        let projects = await this.get('/projects');
+        let collection = new ProjectCollection();
+
+        return collection;
+
+        // projects.forEach(({project}: Project) => {
+
+        // })
+
+        // foreach($projects['project'] as $projectData) {
+        //     $project = new Project\Project(
+        //         (int)$projectData['project-id'],
+        //         $projectData['name'],
+        //         $projectData['status'],
+        //         $projectData['permalink'],
+        //         (int)$projectData['total-tickets'],
+        //         (int)$projectData['open-tickets'],
+        //         (int)$projectData['closed-tickets']
+        //     );
+
+        //     $this->categories($project);
+        //     $this->priorities($project);
+        //     $this->statuses($project);
+        //     $this->types($project);
+
+        //     $this->projectCollection->addProject($project);
+        // }
+
+        // return $this->projectCollection;
+    }
 }
 
 // <?php

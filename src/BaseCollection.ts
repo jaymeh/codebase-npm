@@ -1,5 +1,5 @@
 // @ts-ignore
-import Collection from 'collectionsjs';
+let Collection = require('collectionsjs');
 
 export default abstract class BaseCollection extends Collection {
     all() {

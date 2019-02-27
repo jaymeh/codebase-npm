@@ -6,6 +6,7 @@
       "outDir": "./lib",
       "strict": true
     },
+    "ignoreDefinitions": [ "collectionsjs" ],
     "include": ["src"],
     "exclude": ["node_modules", "**/__tests__/*"]
 }

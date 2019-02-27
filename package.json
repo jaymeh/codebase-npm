@@ -45,6 +45,8 @@
   ],
   "dependencies": {
     "axios": "^0.18.0",
-    "collectionsjs": "^0.3.2"
+    "collectionsjs": "^0.3.2",
+    "js2xmlparser": "^4.0.0",
+    "xml2js": "^0.4.19"
   }
 }

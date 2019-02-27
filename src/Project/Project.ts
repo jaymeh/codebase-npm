@@ -5,11 +5,6 @@ import PriorityCollection from "../Ticket/Priority/PriorityCollection";
 import StatusCollection from "../Ticket/Status/StatusCollection";
 import TypeCollection from "../Ticket/Type/TypeCollection";
 import Ticket from '../Ticket/Ticket';
-import TimeSession from "../TimeSession/TimeSession";
-import Category from "../Ticket/Category/Category";
-import Priority from "../Ticket/Priority/Priority";
-import Status from "../Ticket/Status/Status";
-import Type from "../Ticket/Type/Type";
 
 export default class Project {
     private id: number;

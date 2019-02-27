@@ -1,4 +1,5 @@
-import axios, { AxiosRequestConfig, AxiosInstance } from 'axios';
+import axios, { AxiosRequestConfig, AxiosInstance, AxiosResponse } from 'axios';
+var parseString = require('xml2js').parseString;
 
 export default class CodebaseHQConnector {
     private apiUser: string;
@@ -33,10 +34,30 @@ export default class CodebaseHQConnector {
     }
 
     protected async get(endpointUrl: string) {
-        return await this.instance.get(this.apiUrl + endpointUrl);
+        let response = await this.instance.get(this.apiUrl + endpointUrl);
+        return this.responseToArray(response);
     }
 
     protected async post(endpointUrl: string, data: any) {
-        return await this.instance.post(this.apiUrl + endpointUrl, data);
+        // Parse the data into xml.
+
+        let response = await this.instance.post(this.apiUrl + endpointUrl, data);
+        return this.responseToArray(response);
+    }
+
+    /**
+     * Converts an API response into an associative array, via XML
+     * @param string $response
+     * @return array
+     */
+    private responseToArray(response: AxiosResponse)
+    {
+        let data = response.data;
+        var documentData = null;
+        parseString(data, (err: any, result: any) => {
+            documentData = result;
+        });
+
+        return documentData;
     }
 }

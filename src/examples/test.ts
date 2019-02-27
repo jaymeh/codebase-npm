@@ -6,4 +6,6 @@ let collection = new ProjectCollection();
 
 collection.addItem(project);
 
-collection.getActive();
+let active = collection.getActive();
+
+console.log(active);
