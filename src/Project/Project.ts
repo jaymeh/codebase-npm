@@ -103,11 +103,11 @@ export default class Project {
         return this.timeSessionCollection;
     }
 
-    public addTimeSession(timeSession: TimeSession) {
-        this.timeSessionCollection.addTimeSession(timeSession);
+    // public addTimeSession(timeSession: TimeSession) {
+    //     this.timeSessionCollection.addTimeSession(timeSession);
 
-        return this;
-    }
+    //     return this;
+    // }
 
     public getTicketCategories() {
         return this.ticketCategoryCollection;
@@ -117,11 +117,11 @@ export default class Project {
         return this.ticketCategoryCollection.searchById(id);
     }
 
-    public addTicketCategory(ticketCategory: Category) {
-        this.ticketCategoryCollection.addticketCategory(ticketCategory);
+    // public addTicketCategory(ticketCategory: Category) {
+    //     this.ticketCategoryCollection.addticketCategory(ticketCategory);
 
-        return this;
-    }
+    //     return this;
+    // }
 
     public getTicketPriorities() {
         return this.ticketPriorityCollection;
@@ -131,11 +131,11 @@ export default class Project {
         return this.ticketPriorityCollection.searchById(id);
     }
 
-    public addTicketPriority(ticketPriority: Priority) {
-        this.ticketPriorityCollection.addTicketPriority(ticketPriority);
+    // public addTicketPriority(ticketPriority: Priority) {
+    //     this.ticketPriorityCollection.addTicketPriority(ticketPriority);
 
-        return this;
-    }
+    //     return this;
+    // }
 
     public getTicketStatuses() {
         return this.ticketStatusCollection;
@@ -145,9 +145,9 @@ export default class Project {
         return this.ticketStatusCollection.searchById(id);
     }
 
-    public addTicketStatus(ticketStatus: Status) {
-        this.ticketStatusCollection.addTicketStatus(ticketStatus);
-    }
+    // public addTicketStatus(ticketStatus: Status) {
+    //     this.ticketStatusCollection.addTicketStatus(ticketStatus);
+    // }
 
     public getTicketTypes() {
         return this.ticketTypeCollection;
@@ -157,7 +157,7 @@ export default class Project {
         return this.ticketTypeCollection.searchById(id);
     }
 
-    public addTicketType(ticketType: Type) {
-        return this.ticketTypeCollection.addTicketType(ticketType);
-    }
+    // public addTicketType(ticketType: Type) {
+    //     return this.ticketTypeCollection.addTicketType(ticketType);
+    // }
 }

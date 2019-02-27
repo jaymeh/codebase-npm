@@ -5,6 +5,7 @@ export default abstract class BaseCollection extends Collection {
     all() {
         return super.all();
     }
+
     public addItem(value: any) {
         super.push(value);
     }

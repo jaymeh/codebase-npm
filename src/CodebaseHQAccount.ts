@@ -3,13 +3,11 @@ import CodebaseHQConnector from "./CodebaseHQConnector";
 export default class CodebaseHQAccount extends CodebaseHQConnector{
     constructor(apiUser: string, apiKey: string, apiHostname: string) {
         super(apiUser, apiKey, apiHostname);
-
-        
     }
     /**
 //      * Constructor
-//      * @param string $apiUser 
-//      * @param string $apiKey 
+//      * @param string $apiUser
+//      * @param string $apiKey
 //      * @param string $apiHostname
 //      * @return void
 //      */
@@ -52,8 +50,8 @@ export default class CodebaseHQAccount extends CodebaseHQConnector{
 
 //     /**
 //      * Constructor
-//      * @param string $apiUser 
-//      * @param string $apiKey 
+//      * @param string $apiUser
+//      * @param string $apiKey
 //      * @param string $apiHostname
 //      * @return void
 //      */
@@ -159,7 +157,7 @@ export default class CodebaseHQAccount extends CodebaseHQConnector{
 
 //     /**
 //      * Populates categories for a project
-//      * @param Project\Project &$project 
+//      * @param Project\Project &$project
 //      * @return bool
 //      */
 //     private function categories(Project\Project &$project) : bool
@@ -190,7 +188,7 @@ export default class CodebaseHQAccount extends CodebaseHQConnector{
 
 //     /**
 //      * Populates priorities for a project
-//      * @param Project\Project &$project 
+//      * @param Project\Project &$project
 //      * @return bool
 //      */
 //     private function priorities(Project\Project &$project) : bool
@@ -232,7 +230,7 @@ export default class CodebaseHQAccount extends CodebaseHQConnector{
 
 //     /**
 //      * Populates statuses for a project
-//      * @param Project\Project &$project 
+//      * @param Project\Project &$project
 //      * @return bool
 //      */
 //     private function statuses(Project\Project &$project) : bool
@@ -274,7 +272,7 @@ export default class CodebaseHQAccount extends CodebaseHQConnector{
 
 //     /**
 //      * Populates types for a project
-//      * @param Project\Project &$project 
+//      * @param Project\Project &$project
 //      * @return bool
 //      */
 //     private function types(Project\Project &$project) : bool
@@ -307,7 +305,7 @@ export default class CodebaseHQAccount extends CodebaseHQConnector{
 
 //     /**
 //      * Populates tickets on the given project
-//      * @param Project\Project &$project 
+//      * @param Project\Project &$project
 //      * @param int $pageNo
 //      * @return bool
 //      */
@@ -366,8 +364,8 @@ export default class CodebaseHQAccount extends CodebaseHQConnector{
 
 //     /**
 //      * Populates time sessions on the given project
-//      * @param Project\Project &$project 
-//      * @param Period\Period $period 
+//      * @param Project\Project &$project
+//      * @param Period\Period $period
 //      * @return bool
 //      */
 //     public function times(Project\Project &$project, Period\Period $period) : bool
@@ -388,7 +386,7 @@ export default class CodebaseHQAccount extends CodebaseHQConnector{
 //             $user = isset($timeSession['user-id']) ? $this->userCollection->searchById((int)$timeSession['user-id']) : null;
 
 //             $ticket = (!isset($timeSession['ticket-id']) || is_array($timeSession['ticket-id']))
-//                 ? null 
+//                 ? null
 //                 : $project->getTickets()->searchById((int)$timeSession['ticket-id']);
 
 //             $timeSession = new TimeSession\TimeSession(
@@ -406,7 +404,7 @@ export default class CodebaseHQAccount extends CodebaseHQConnector{
 //             $project->addTimeSession($timeSession);
 
 //             if (isset($ticket)) {
-//                 $ticket->addTimeSession($timeSession);    
+//                 $ticket->addTimeSession($timeSession);
 //             }
 
 //             if (isset($user)) {
