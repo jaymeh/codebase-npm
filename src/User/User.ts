@@ -1,7 +1,8 @@
 import TimeSessionCollection from "../TimeSession/TimeSessionCollection";
 import TimeSession from "../TimeSession/TimeSession";
+import BaseModelInterface from "../BaseModelInterface";
 
-export default class User {
+export default class User implements BaseModelInterface {
     private id: number;
     private username: string|null;
     private company: string|null;
@@ -43,6 +44,11 @@ export default class User {
         this.enabled = enabled;
         this.timeSessionCollection = new TimeSessionCollection();
     }
+
+    convertToXml(model: any) {
+        console.log(this);
+    }
+
     /**
      * Gets user id
      * @return int

@@ -5,8 +5,9 @@ import PriorityCollection from "../Ticket/Priority/PriorityCollection";
 import StatusCollection from "../Ticket/Status/StatusCollection";
 import TypeCollection from "../Ticket/Type/TypeCollection";
 import Ticket from '../Ticket/Ticket';
+import BaseModelInterface from "../BaseModelInterface";
 
-export default class Project {
+export default class Project implements BaseModelInterface {
     private id: number;
     private name: string;
     private status: string;
@@ -44,6 +45,10 @@ export default class Project {
             this.ticketPriorityCollection = new PriorityCollection();
             this.ticketStatusCollection = new StatusCollection();
             this.ticketTypeCollection = new TypeCollection();
+    }
+
+    convertToXml(model: any) {
+
     }
 
     /**

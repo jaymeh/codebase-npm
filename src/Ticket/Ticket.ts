@@ -5,8 +5,9 @@ import Type from "./Type/Type";
 import TimeSessionCollection from "../TimeSession/TimeSessionCollection";
 import TimeSession from "../TimeSession/TimeSession";
 import User from "../User/User";
+import BaseModelInterface from "../BaseModelInterface";
 
-export default class Ticket {
+export default class Ticket implements BaseModelInterface {
     private id: number;
     private projectId: number;
     private summary: string;
@@ -53,6 +54,11 @@ export default class Ticket {
         this.totalTimeSpent = totalTimeSpent;
         this.timeSessionCollection = new TimeSessionCollection();
     }
+
+    convertToXml(model: any) {
+
+    }
+
     /**
      * Gets Ticket id
      * @return number

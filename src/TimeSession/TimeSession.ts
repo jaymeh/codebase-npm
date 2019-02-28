@@ -1,8 +1,12 @@
 import Project from "../Project/Project";
 import Ticket from "../Ticket/Ticket";
 import User from "../User/User";
+import BaseModelInterface from "../BaseModelInterface";
 
-export default class TimeSession {
+var js2xmlparser = require("js2xmlparser");
+const decamelizeKeys = require('decamelize-keys');
+
+export default class TimeSession implements BaseModelInterface {
     private id: number;
     private project: Project;
     private summary: string;
@@ -45,6 +49,28 @@ export default class TimeSession {
         this.ticket = ticket;
         this.updatedAt = updatedAt;
         this.createdAt = createdAt;
+    }
+
+    convertToXml() {
+        let timeSession = JSON.stringify(this);
+        let sessionString = JSON.parse(timeSession);
+        sessionString.project = this.project.getId();
+        sessionString.userId = null;
+        if(this.user) {
+          sessionString.userId = this.user!.getId();
+        }
+
+        sessionString.ticketId = null;
+        if(this.ticket) {
+            sessionString.ticketId = this.ticket.getId();
+        }
+
+        delete sessionString.user;
+        delete sessionString.ticket;
+
+        sessionString = decamelizeKeys(sessionString, '-');
+
+        return js2xmlparser.parse("time-session", sessionString);
     }
 
     /**
