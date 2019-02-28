@@ -7,6 +7,9 @@ import TimeSession from "../TimeSession/TimeSession";
 import User from "../User/User";
 import BaseModelInterface from "../BaseModelInterface";
 
+var js2xmlparser = require("js2xmlparser");
+const decamelizeKeys = require('decamelize-keys');
+
 export default class Ticket implements BaseModelInterface {
     private id: number;
     private projectId: number;
@@ -21,7 +24,6 @@ export default class Ticket implements BaseModelInterface {
     private status: Status|null;
     private type: Type|null;
     private estimatedTime: number|null;
-
     private timeSessionCollection: TimeSessionCollection;
 
     constructor(
@@ -55,9 +57,42 @@ export default class Ticket implements BaseModelInterface {
         this.timeSessionCollection = new TimeSessionCollection();
     }
 
-    convertToXml(model: any) {
+    convertToXml() {
+      let ticket = JSON.stringify(this);
+      let ticketString = JSON.parse(ticket);
 
-    }
+      if(this.reporter) {
+        ticketString.reporterId = this.reporter!.getId();
+        ticketString.reporter = this.reporter.getFullName();
+      }
+
+      if(this.assignee) {
+        ticketString.assigneeId = this.assignee!.getId();
+        ticketString.assignee = this.assignee.getFullName();
+      }
+
+      if(this.category) {
+        ticketString.categoryId = this.category.getId();
+      }
+
+      if(this.priority) {
+        ticketString.priorityId = this.priority.getId();
+      }
+
+      if(this.status) {
+        ticketString.statusId = this.status.getId();
+      }
+
+      delete ticketString.reporter;
+      delete ticketString.assignee;
+      delete ticketString.category;
+      delete ticketString.priority;
+      delete ticketString.status;
+
+      ticketString = decamelizeKeys(ticketString, '-');
+
+      return js2xmlparser.parse("ticket", ticketString);
+  }
 
     /**
      * Gets Ticket id

@@ -2,6 +2,9 @@ import TimeSessionCollection from "../TimeSession/TimeSessionCollection";
 import TimeSession from "../TimeSession/TimeSession";
 import BaseModelInterface from "../BaseModelInterface";
 
+var js2xmlparser = require("js2xmlparser");
+const decamelizeKeys = require('decamelize-keys');
+
 export default class User implements BaseModelInterface {
     private id: number;
     private username: string|null;
@@ -45,9 +48,16 @@ export default class User implements BaseModelInterface {
         this.timeSessionCollection = new TimeSessionCollection();
     }
 
-    convertToXml(model: any) {
-        console.log(this);
-    }
+    convertToXml() {
+      let user = JSON.stringify(this);
+      let userString = JSON.parse(user);
+
+      delete userString.timeSessionCollection;
+
+      userString = decamelizeKeys(userString, '-');
+
+      return js2xmlparser.parse("user", userString);
+  }
 
     /**
      * Gets user id
@@ -96,6 +106,10 @@ export default class User implements BaseModelInterface {
     getLastName()
     {
         return this.lastName;
+    }
+
+    getFullName() {
+      return `${this.getFirstName()} ${this.getLastName()}`;
     }
     /**
      * Gets gravatar url

@@ -1,6 +1,8 @@
 import CodebaseHQConnector from "./CodebaseHQConnector";
 import ProjectCollection from "./Project/ProjectCollection";
 import UserCollection from "./User/UserCollection";
+import Project from "./Project/Project";
+import Category from "./Ticket/Category/Category";
 
 export default class CodebaseHQAccount extends CodebaseHQConnector {
     private projectCollection: ProjectCollection;
@@ -17,12 +19,32 @@ export default class CodebaseHQAccount extends CodebaseHQConnector {
      * Returns a collection of all projects
      * @return Project\Collection
      */
-    async projects()
+    async projects(): Promise<ProjectCollection>
     {
-        let projects = await this.get('/projects');
-        let collection = new ProjectCollection();
+        let { projects } = await this.get('/projects');
 
-        return collection;
+        if(projects) {
+          projects.project.forEach(async (project: any) => {
+            let ProjectItem = new Project(
+              project['project-id'],
+              project.name,
+              project.status,
+              project.permalink,
+              project['total-tickets'],
+              project['open-tickets'],
+              project['closed-tickets']
+            );
+
+            await this.categories(project);
+            // $this->priorities($project);
+            // $this->statuses($project);
+            // $this->types($project);
+
+            this.projectCollection.addProject(ProjectItem);
+          });
+        }
+
+        return this.projectCollection;
 
         // projects.forEach(({project}: Project) => {
 
@@ -30,7 +52,8 @@ export default class CodebaseHQAccount extends CodebaseHQConnector {
 
         // foreach($projects['project'] as $projectData) {
         //     $project = new Project\Project(
-        //         (int)$projectData['project-id'],
+        //         (int)$projectData['project-id']
+
         //         $projectData['name'],
         //         $projectData['status'],
         //         $projectData['permalink'],
@@ -48,6 +71,34 @@ export default class CodebaseHQAccount extends CodebaseHQConnector {
         // }
 
         // return $this->projectCollection;
+    }
+
+    /**
+     * Populates categories for a project
+     * @param Project\Project &$project
+     * @return bool
+     */
+    async categories(project: Project) : Promise<boolean>
+    {
+      let url = `/${project.getPermalink()}/tickets/categories`;
+
+      let categories = await this.get(url);
+
+      if(!categories['ticketing-category']) {
+        return false;
+      }
+
+      categories['ticketing-category'].forEach((category: any) => {
+        if(!category.isArray()) {
+          return;
+        }
+
+        let categoryItem = new Category(category['id'], category['name']);
+
+        project.addTicketCategory(categoryItem);
+      })
+
+      return true;
     }
 }
 

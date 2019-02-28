@@ -6,6 +6,14 @@ import StatusCollection from "../Ticket/Status/StatusCollection";
 import TypeCollection from "../Ticket/Type/TypeCollection";
 import Ticket from '../Ticket/Ticket';
 import BaseModelInterface from "../BaseModelInterface";
+import Category from "../Ticket/Category/Category";
+import { TimeSession } from "..";
+import Priority from "../Ticket/Priority/Priority";
+import Status from "../Ticket/Status/Status";
+import Type from "../Ticket/Type/Type";
+
+var js2xmlparser = require("js2xmlparser");
+const decamelizeKeys = require('decamelize-keys');
 
 export default class Project implements BaseModelInterface {
     private id: number;
@@ -47,9 +55,21 @@ export default class Project implements BaseModelInterface {
             this.ticketTypeCollection = new TypeCollection();
     }
 
-    convertToXml(model: any) {
+    convertToXml() {
+      let project = JSON.stringify(this);
+      let projectString = JSON.parse(project);
 
-    }
+      delete this.ticketCollection
+      delete this.timeSessionCollection
+      delete this.ticketCategoryCollection
+      delete this.ticketPriorityCollection
+      delete this.ticketStatusCollection
+      delete this.ticketTypeCollection
+
+      projectString = decamelizeKeys(projectString, '-');
+
+      return js2xmlparser.parse("project", projectString);
+  }
 
     /**
      * Gets project id
@@ -103,11 +123,11 @@ export default class Project implements BaseModelInterface {
         return this.timeSessionCollection;
     }
 
-    // public addTimeSession(timeSession: TimeSession) {
-    //     this.timeSessionCollection.addTimeSession(timeSession);
+    public addTimeSession(timeSession: TimeSession) {
+        this.timeSessionCollection.addTimeSession(timeSession);
 
-    //     return this;
-    // }
+        return this;
+    }
 
     public getTicketCategories() {
         return this.ticketCategoryCollection;
@@ -117,11 +137,11 @@ export default class Project implements BaseModelInterface {
         return this.ticketCategoryCollection.searchById(id);
     }
 
-    // public addTicketCategory(ticketCategory: Category) {
-    //     this.ticketCategoryCollection.addticketCategory(ticketCategory);
+    public addTicketCategory(ticketCategory: Category) {
+        this.ticketCategoryCollection.addticketCategory(ticketCategory);
 
-    //     return this;
-    // }
+        return this;
+    }
 
     public getTicketPriorities() {
         return this.ticketPriorityCollection;
@@ -131,11 +151,11 @@ export default class Project implements BaseModelInterface {
         return this.ticketPriorityCollection.searchById(id);
     }
 
-    // public addTicketPriority(ticketPriority: Priority) {
-    //     this.ticketPriorityCollection.addTicketPriority(ticketPriority);
+    public addTicketPriority(ticketPriority: Priority) {
+        this.ticketPriorityCollection.addTicketPriority(ticketPriority);
 
-    //     return this;
-    // }
+        return this;
+    }
 
     public getTicketStatuses() {
         return this.ticketStatusCollection;
@@ -145,9 +165,9 @@ export default class Project implements BaseModelInterface {
         return this.ticketStatusCollection.searchById(id);
     }
 
-    // public addTicketStatus(ticketStatus: Status) {
-    //     this.ticketStatusCollection.addTicketStatus(ticketStatus);
-    // }
+    public addTicketStatus(ticketStatus: Status) {
+        this.ticketStatusCollection.addTicketStatus(ticketStatus);
+    }
 
     public getTicketTypes() {
         return this.ticketTypeCollection;
@@ -157,7 +177,7 @@ export default class Project implements BaseModelInterface {
         return this.ticketTypeCollection.searchById(id);
     }
 
-    // public addTicketType(ticketType: Type) {
-    //     return this.ticketTypeCollection.addTicketType(ticketType);
-    // }
+    public addTicketType(ticketType: Type) {
+        return this.ticketTypeCollection.addTicketType(ticketType);
+    }
 }

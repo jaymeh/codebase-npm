@@ -20,29 +20,31 @@ export default class CodebaseHQConnector {
         this.apiUrl = apiUrl;
         let config: AxiosRequestConfig = {
             baseURL: this.apiUrl,
-            timeout: 1000,
+            timeout: 5000,
             headers: {
                 'Content-Type': 'application/xml',
-                'Accept': 'application/xml',
+                'Accept': 'application/xml'
             },
             auth: {
-                username: apiKey,
-                password: apiUser
+              username: apiUser,
+              password: apiKey
             }
         };
+
         this.instance = axios.create(config);
     }
 
     protected async get(endpointUrl: string) {
         let response = await this.instance.get(this.apiUrl + endpointUrl);
-        return this.responseToArray(response);
+        let arrayResponse = await this.responseToArray(response);
+        return arrayResponse;
     }
 
     protected async post(endpointUrl: string, data: any) {
         // Parse the data into xml.
-
         let response = await this.instance.post(this.apiUrl + endpointUrl, data);
-        return this.responseToArray(response);
+        let arrayResponse = await this.responseToArray(response);
+        return arrayResponse;
     }
 
     /**
@@ -50,14 +52,20 @@ export default class CodebaseHQConnector {
      * @param string $response
      * @return array
      */
-    private responseToArray(response: AxiosResponse)
+    private responseToArray(response: AxiosResponse) : Promise<any>
     {
         let data = response.data;
-        var documentData = null;
-        parseString(data, (err: any, result: any) => {
-            documentData = result;
-        });
 
-        return documentData;
+        return new Promise((resolve, reject) => {
+          parseString(data, {trim: true, ignoreAttrs: true, explicitArray: false}, (err: any, result: any) => {
+            if(!err) {
+              // let items = JSON.stringify(result);
+              // console.log(items);
+              resolve(result);
+            }
+
+            reject(err);
+          });
+        })
     }
 }
