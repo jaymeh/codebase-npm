@@ -86,20 +86,25 @@ export default class CodebaseHQAccount extends CodebaseHQConnector {
    * @return User\Collection
    */
   async users(): Promise<UserCollection> {
-    let users = await this.get('/users');
+    let {users} = await this.get('/users');
 
-    users.forEach((user: any) => {
+    if(!users) {
+      return this.userCollection;
+    }
+
+    await forEach(users.user, async (user: any) => {
+      let userItem = new User(
+        user['id'],
+        user['enabled'] ? true : false,
+        user['username'] ? user['username'] : null,
+        user['company'] ? user['company'] : null,
+        user['email-address'] ? user['email-address'] : null,
+        user['first-name'] ? user['first-name'] : null,
+        user['last-name'] ? user['last-name'] : null,
+        user['gravatar-url'] ? user['gravatar-url'] : null,
+      );
       this.userCollection.addUser(
-        new User(
-          user['id'],
-          user['enabled'] ? true : false,
-          user['username'] ? user['username'] : null,
-          user['company'] ? user['company'] : null,
-          user['email-address'] ? user['email-address'] : null,
-          user['first-name'] ? user['first-name'] : null,
-          user['last-name'] ? user['last-name'] : null,
-          user['gravatar-url'] ? user['gravatar-url'] : null,
-        )
+        userItem
       )
     })
 
@@ -268,7 +273,7 @@ export default class CodebaseHQAccount extends CodebaseHQConnector {
   {
     let url = `/${project.getPermalink()}/tickets?page=${pageNo}`;
 
-    let tickets = await this.get(url);
+    let {tickets} = await this.get(url);
 
     if(!tickets) {
       return false;
@@ -278,8 +283,8 @@ export default class CodebaseHQAccount extends CodebaseHQConnector {
       return false;
     }
 
-    tickets['ticket'].forEach((ticket: any) => {
-      if(!ticket.isArray() || !ticket['ticket-id']) {
+    await forEach(tickets.ticket, (ticket: any) => {
+      if(!ticket['ticket-id'] || typeof ticket !== 'object') {
         return;
       }
 
@@ -330,6 +335,7 @@ export default class CodebaseHQAccount extends CodebaseHQConnector {
     let url = `/${project.getPermalink()}/time_sessions${period.getPeriod()}`;
 
     let timeSessions = await this.get(url);
+    timeSessions = timeSessions['time-sessions'];
 
     if(!timeSessions) {
       return false;
@@ -340,13 +346,12 @@ export default class CodebaseHQAccount extends CodebaseHQConnector {
     }
 
     timeSessions['time-session'].forEach((timeSession: any) => {
-      if (!timeSession.isArray() || !timeSession['id']) {
+      if (!timeSession['id'] || typeof timeSession !== 'object') {
         return
       }
 
       let user = timeSession['user-id'] ? this.userCollection.searchById(timeSession['user-id']) : null;
-
-      let ticket = (!timeSession['ticket-id']) || timeSession['ticket-id'].isArray() ? null : project.getTickets().searchById(timeSession['ticket-id']);
+      let ticket = (!timeSession['ticket-id']) || typeof timeSession['ticket-id'] == 'object' ? null : project.getTickets().searchById(timeSession['ticket-id']);
 
       let newTimeSession = new TimeSession(
         timeSession['id'],

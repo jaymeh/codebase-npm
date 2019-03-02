@@ -8,7 +8,7 @@ export default class UserCollection extends BaseCollection  {
      * @return void
      */
     addUser(user: User) {
-        super.addItem(user);
+      super.addItem(user);
     }
     /**
      * Returns a new collection of active users

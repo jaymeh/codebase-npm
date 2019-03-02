@@ -20,7 +20,7 @@ export default class CodebaseHQConnector {
         this.apiUrl = apiUrl;
         let config: AxiosRequestConfig = {
             baseURL: this.apiUrl,
-            timeout: 5000,
+            timeout: 15000,
             headers: {
                 'Content-Type': 'application/xml',
                 'Accept': 'application/xml'
@@ -40,16 +40,19 @@ export default class CodebaseHQConnector {
         let arrayResponse = await this.responseToArray(response);
         return arrayResponse;
       } catch(e) {
-        e
+        console.log(e);
       }
-
     }
 
     protected async post(endpointUrl: string, data: any) {
+      try {
         // Parse the data into xml.
         let response = await this.instance.post(this.apiUrl + endpointUrl, data);
         let arrayResponse = await this.responseToArray(response);
         return arrayResponse;
+      } catch(e) {
+        console.log(e);
+      }
     }
 
     /**

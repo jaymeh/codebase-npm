@@ -11,7 +11,7 @@ export default abstract class BaseCollection extends Collection {
     }
 
     public searchById(id: number) {
-        return super.where('id', id);
+        return super.where('id', id).first();
     }
 
     public getCount() {
