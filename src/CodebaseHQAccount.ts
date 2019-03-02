@@ -3,490 +3,374 @@ import ProjectCollection from "./Project/ProjectCollection";
 import UserCollection from "./User/UserCollection";
 import Project from "./Project/Project";
 import Category from "./Ticket/Category/Category";
+import User from "./User/User";
+import Priority from "./Ticket/Priority/Priority";
+import Status from "./Ticket/Status/Status";
+import Type from "./Ticket/Type/Type";
+import Period from "./TimeSession/Period/Period";
+import { TimeSession } from ".";
+import Ticket from "./Ticket/Ticket";
+const { forEach } = require('p-iteration');
 
 export default class CodebaseHQAccount extends CodebaseHQConnector {
-    private projectCollection: ProjectCollection;
-    private userCollection: UserCollection;
+  private projectCollection: ProjectCollection;
+  private userCollection: UserCollection;
 
-    constructor(apiUser: string, apiKey: string, apiHostname: string) {
-        super(apiUser, apiKey, apiHostname);
+  constructor(apiUser: string, apiKey: string, apiHostname: string) {
+      super(apiUser, apiKey, apiHostname);
 
-        this.projectCollection = new ProjectCollection();
-        this.userCollection = new UserCollection();
-    }
+      this.projectCollection = new ProjectCollection();
+      this.userCollection = new UserCollection();
+  }
 
-    /**
-     * Returns a collection of all projects
-     * @return Project\Collection
-     */
-    async projects(): Promise<ProjectCollection>
-    {
-        let { projects } = await this.get('/projects');
+  /**
+   * Returns a collection of all projects
+   * @return Project\Collection
+   */
+  async projects(): Promise<ProjectCollection>
+  {
+      let { projects } = await this.get('/projects');
 
-        if(projects) {
-          projects.project.forEach(async (project: any) => {
-            let ProjectItem = new Project(
-              project['project-id'],
-              project.name,
-              project.status,
-              project.permalink,
-              project['total-tickets'],
-              project['open-tickets'],
-              project['closed-tickets']
-            );
+      if(projects) {
+        await forEach(projects.project, async (project: any) => {
+          let ProjectItem = new Project(
+            project['project-id'],
+            project.name,
+            project.status,
+            project.permalink,
+            project['total-tickets'],
+            project['open-tickets'],
+            project['closed-tickets']
+          );
 
-            await this.categories(project);
-            // $this->priorities($project);
-            // $this->statuses($project);
-            // $this->types($project);
+          await this.categories(ProjectItem);
+          await this.priorities(ProjectItem);
+          await this.statuses(ProjectItem);
+          await this.types(ProjectItem);
 
-            this.projectCollection.addProject(ProjectItem);
-          });
-        }
-
-        return this.projectCollection;
-
-        // projects.forEach(({project}: Project) => {
-
-        // })
-
-        // foreach($projects['project'] as $projectData) {
-        //     $project = new Project\Project(
-        //         (int)$projectData['project-id']
-
-        //         $projectData['name'],
-        //         $projectData['status'],
-        //         $projectData['permalink'],
-        //         (int)$projectData['total-tickets'],
-        //         (int)$projectData['open-tickets'],
-        //         (int)$projectData['closed-tickets']
-        //     );
-
-        //     $this->categories($project);
-        //     $this->priorities($project);
-        //     $this->statuses($project);
-        //     $this->types($project);
-
-        //     $this->projectCollection->addProject($project);
-        // }
-
-        // return $this->projectCollection;
-    }
-
-    /**
-     * Populates categories for a project
-     * @param Project\Project &$project
-     * @return bool
-     */
-    async categories(project: Project) : Promise<boolean>
-    {
-      let url = `/${project.getPermalink()}/tickets/categories`;
-
-      let categories = await this.get(url);
-
-      if(!categories['ticketing-category']) {
-        return false;
+          await this.projectCollection.addProject(ProjectItem);
+        });
       }
 
-      categories['ticketing-category'].forEach((category: any) => {
-        if(!category.isArray()) {
-          return;
-        }
+      return this.projectCollection;
+  }
 
-        let categoryItem = new Category(category['id'], category['name']);
+  /**
+   * Returns a collection of all projects
+   * @param string $permalink
+   * @return Project\Project
+   */
+  async project(permalink: string) : Promise<Project> {
+    let {project} = await this.get(`/${permalink}`);
 
-        project.addTicketCategory(categoryItem);
-      })
+    let projectItem = new Project(
+      project['project-id'],
+      project['name'],
+      project['status'],
+      project['permalink'],
+      project['total-tickets'],
+      project['open-tickets'],
+      project['closed-tickets']
+    );
 
-      return true;
+    await this.categories(projectItem);
+    await this.priorities(projectItem);
+    await this.statuses(projectItem);
+    await this.types(projectItem);
+
+    return projectItem;
+  }
+
+      /**
+   * Returns a collection of all users
+   * @return User\Collection
+   */
+  async users(): Promise<UserCollection> {
+    let users = await this.get('/users');
+
+    users.forEach((user: any) => {
+      this.userCollection.addUser(
+        new User(
+          user['id'],
+          user['enabled'] ? true : false,
+          user['username'] ? user['username'] : null,
+          user['company'] ? user['company'] : null,
+          user['email-address'] ? user['email-address'] : null,
+          user['first-name'] ? user['first-name'] : null,
+          user['last-name'] ? user['last-name'] : null,
+          user['gravatar-url'] ? user['gravatar-url'] : null,
+        )
+      )
+    })
+
+    return this.userCollection;
+  }
+
+  /**
+   * Populates categories for a project
+   * @param Project\Project &$project
+   * @return bool
+   */
+  async categories(project: Project) : Promise<boolean>
+  {
+    let url = `/${project.getPermalink()}/tickets/categories`;
+
+    let categories = await this.get(url);
+
+    if(!categories) {
+      return false;
     }
+
+    categories = categories['ticketing-categories'];
+
+    if(!categories['ticketing-category'] || typeof categories['ticketing-category'] !== 'object') {
+      return false;
+    }
+
+    categories['ticketing-category'].forEach((category: any) => {
+      if(!category['id']) {
+        return;
+      }
+
+      let categoryItem = new Category(category['id'], category['name']);
+
+      project.addTicketCategory(categoryItem);
+    })
+
+    return true;
+  }
+
+  /**
+   * Populates priorities for a project
+   * @param Project\Project &$project
+   * @return bool
+   */
+  private async priorities(project: Project) : Promise<boolean>
+  {
+    let url = `/${project.getPermalink()}/tickets/priorities`;
+
+    let priorities = await this.get(url);
+
+    if(!priorities) {
+      return false;
+    }
+
+    priorities = priorities['ticketing-priorities'];
+
+    if (!priorities['ticketing-priority'] || typeof priorities['ticketing-priority'] !== 'object') {
+        return false;
+    }
+
+    priorities['ticketing-priority'].forEach((priority: any) => {
+      if(!priority['id']) {
+        return;
+      }
+
+      project.addTicketPriority(
+        new Priority(
+          priority['id'],
+          priority['name'] ? priority['name'] : null,
+          priority['colour'] ? priority['colour'] : null,
+          priority['default'] ? priority['default'] : null,
+          priority['position'] ? priority['position'] : null
+        )
+      );
+    })
+
+    return true;
+  }
+
+  /**
+   * Populates statuses for a project
+   * @param Project\Project &$project
+   * @return bool
+   */
+  private async statuses(project: Project) : Promise<boolean>
+  {
+    let url = `/${project.getPermalink()}/tickets/statuses`;
+
+    let statuses = await this.get(url);
+
+    if(!statuses) {
+      return false;
+    }
+
+    statuses = statuses['ticketing-statuses']
+
+    if (!statuses['ticketing-status'] || typeof statuses['ticketing-status'] !== 'object') {
+          return false;
+    }
+
+    statuses['ticketing-status'].forEach((status: any) => {
+      if (typeof status !== 'object' || !status['id']) {
+        return;
+      }
+
+      project.addTicketStatus(
+        new Status(
+          status['id'],
+          status['name'] ? status['name'] : null,
+          status['colour'] ? status['colour'] : null,
+          status['treat-as-closed'] ? true : null,
+          status['order'] ? status['order'] : null
+        )
+      );
+    })
+
+    return true;
+  }
+
+
+  /**
+   * Populates types for a project
+   * @param Project\Project &$project
+   * @return bool
+   */
+  private async types(project: Project) : Promise<boolean>
+  {
+    let url = `/${project.getPermalink()}/tickets/types`;
+
+    let types = await this.get(url);
+
+    if(!types) {
+      return false;
+    }
+
+    types = types['ticketing-types'];
+
+    if (!types['ticketing-type'] || typeof types['ticketing-type'] !== 'object') {
+        return false;
+    }
+
+    types['ticketing-type'].forEach((type: any) => {
+      if (!type['id'] || typeof type !== 'object') {
+        return;
+      }
+
+      project.addTicketType(
+        new Type(
+          type['id'],
+          type['name'] ? type['name'] : null
+        )
+      );
+    })
+
+    return true;
+  }
+
+  /**
+   * Populates tickets on the given project
+   * @param Project\Project &$project
+   * @param int $pageNo
+   * @return bool
+   */
+  public async tickets(project: Project, pageNo: number = 1) : Promise<boolean>
+  {
+    let url = `/${project.getPermalink()}/tickets?page=${pageNo}`;
+
+    let tickets = await this.get(url);
+
+    if(!tickets) {
+      return false;
+    }
+
+    if(!tickets['ticket']) {
+      return false;
+    }
+
+    tickets['ticket'].forEach((ticket: any) => {
+      if(!ticket.isArray() || !ticket['ticket-id']) {
+        return;
+      }
+
+      let assignee = ticket['assignee-id'] ? this.userCollection.searchById(ticket['assignee-id']) : null;
+
+      let reporter = ticket['reporter-id'] ? this.userCollection.searchById(ticket['reporter-id']) : null;
+
+      let category = project.getTicketCategoryById(ticket['category-id']);
+
+      let priority = project.getTicketPriorityById(ticket['priority-id']);
+
+      let status = project.getTicketStatusById(ticket['status-id']);
+
+      let type = project.getTicketTypeById(ticket['type-id']);
+
+      let estimatedTime = ticket['estimated-time'] && typeof ticket['estimated-time'] == 'string' ? ticket['estimated-time'] : null;
+
+      project.addTicket(
+        new Ticket(
+            ticket['ticket-id'],
+            ticket['project-id'],
+            ticket['summary'],
+            new Date(ticket['updated-at']),
+            new Date(ticket['created-at']),
+            ticket['total-time-spent'],
+            reporter,
+            assignee,
+            category,
+            priority,
+            status,
+            type,
+            estimatedTime
+        )
+      )
+    })
+
+    return true;
+  }
+
+  /**
+   * Populates time sessions on the given project
+   * @param Project\Project &$project
+   * @param Period\Period $period
+   * @return bool
+   */
+  public async times(project: Project, period: Period) : Promise<boolean>
+  {
+    let url = `/${project.getPermalink()}/time_sessions${period.getPeriod()}`;
+
+    let timeSessions = await this.get(url);
+
+    if(!timeSessions) {
+      return false;
+    }
+
+    if (!timeSessions['time-session']) {
+        return false;
+    }
+
+    timeSessions['time-session'].forEach((timeSession: any) => {
+      if (!timeSession.isArray() || !timeSession['id']) {
+        return
+      }
+
+      let user = timeSession['user-id'] ? this.userCollection.searchById(timeSession['user-id']) : null;
+
+      let ticket = (!timeSession['ticket-id']) || timeSession['ticket-id'].isArray() ? null : project.getTickets().searchById(timeSession['ticket-id']);
+
+      let newTimeSession = new TimeSession(
+        timeSession['id'],
+        project,
+        timeSession['summary'],
+        timeSession['minutes'],
+        new Date(timeSession['session-date']),
+        new Date(timeSession['created-at']),
+        new Date(timeSession['updated-at']),
+        user,
+        ticket
+      );
+
+      project.addTimeSession(newTimeSession);
+
+      if (ticket) {
+          ticket.addTimeSession(newTimeSession);
+      }
+
+      if (user) {
+          user.addTimeSession(newTimeSession);
+      }
+    })
+
+    return true;
+  }
 }
-
-// <?php
-
-// namespace GarethMidwood\CodebaseHQ;
-
-// use GarethMidwood\CodebaseHQ\Project;
-// use GarethMidwood\CodebaseHQ\Ticket;
-// use GarethMidwood\CodebaseHQ\TimeSession\Period;
-// use GarethMidwood\CodebaseHQ\User;
-
-// class CodebaseHQAccount extends CodebaseHQConnector
-// {
-//     /**
-//      * @var Project\Collection
-//      */
-//     private $projectCollection;
-
-//     /**
-//      * @var User\Collection
-//      */
-//     private $userCollection;
-
-//     /**
-//      * Constructor
-//      * @param string $apiUser
-//      * @param string $apiKey
-//      * @param string $apiHostname
-//      * @return void
-//      */
-//     public function __construct(
-//         $apiUser,
-//         $apiKey,
-//         $apiHostname
-//     ) {
-//         parent::__construct(
-//             $apiUser,
-//             $apiKey,
-//             $apiHostname
-//         );
-
-//         $this->projectCollection = new Project\Collection();
-//         $this->userCollection = new User\Collection();
-//     }
-
-//     /**
-//      * Returns a collection of all projects
-//      * @return Project\Collection
-//      */
-//     public function projects() : Project\Collection
-//     {
-//         $projects = $this->get('/projects');
-
-//         foreach($projects['project'] as $projectData) {
-//             $project = new Project\Project(
-//                 (int)$projectData['project-id'],
-//                 $projectData['name'],
-//                 $projectData['status'],
-//                 $projectData['permalink'],
-//                 (int)$projectData['total-tickets'],
-//                 (int)$projectData['open-tickets'],
-//                 (int)$projectData['closed-tickets']
-//             );
-
-//             $this->categories($project);
-//             $this->priorities($project);
-//             $this->statuses($project);
-//             $this->types($project);
-
-//             $this->projectCollection->addProject($project);
-//         }
-
-//         return $this->projectCollection;
-//     }
-
-//     /**
-//      * Returns a collection of all projects
-//      * @param string $permalink
-//      * @return Project\Project
-//      */
-//     public function project(string $permalink) : Project\Project
-//     {
-//         $projectData = $this->get('/' . $permalink);
-
-//         $project = new Project\Project(
-//             (int)$projectData['project-id'],
-//             $projectData['name'],
-//             $projectData['status'],
-//             $projectData['permalink'],
-//             (int)$projectData['total-tickets'],
-//             (int)$projectData['open-tickets'],
-//             (int)$projectData['closed-tickets']
-//         );
-
-//         $this->categories($project);
-//         $this->priorities($project);
-//         $this->statuses($project);
-//         $this->types($project);
-
-//         return $project;
-//     }
-
-
-//     /**
-//      * Returns a collection of all users
-//      * @return User\Collection
-//      */
-//     public function users() : User\Collection
-//     {
-//         $users = $this->get('/users');
-
-//         foreach($users['user'] as $user) {
-
-//             $this->userCollection->addUser(
-//                 new User\User(
-//                     (int)$user['id'],
-//                     (isset($user['username']) && is_string($user['username'])) ? $user['username'] : null,
-//                     (isset($user['company']) && is_string($user['company'])) ? $user['company'] : null,
-//                     (isset($user['email-address']) && is_string($user['email-address'])) ? $user['email-address'] : null,
-//                     (isset($user['first-name']) && is_string($user['first-name'])) ? $user['first-name'] : null,
-//                     (isset($user['last-name']) && is_string($user['last-name'])) ? $user['last-name'] : null,
-//                     (isset($user['gravatar-url']) && is_string($user['gravatar-url'])) ? $user['gravatar-url'] : null,
-//                     filter_var($user['enabled'], FILTER_VALIDATE_BOOLEAN)
-//                 )
-//             );
-//         }
-
-//         return $this->userCollection;
-//     }
-
-//     /**
-//      * Populates categories for a project
-//      * @param Project\Project &$project
-//      * @return bool
-//      */
-//     private function categories(Project\Project &$project) : bool
-//     {
-//         $url = '/' . $project->getPermalink() . '/tickets/categories';
-
-//         $categories = $this->get($url);
-
-//         if (!isset($categories['ticketing-category'])) {
-//             return false;
-//         }
-
-//         foreach($categories['ticketing-category'] as $category) {
-//             if (!is_array($category) || !isset($category['id'])) {
-//                 continue;
-//             }
-
-//             $project->addTicketCategory(
-//                 new Ticket\Category\Category(
-//                     (int)$category['id'],
-//                     $category['name']
-//                 )
-//             );
-//         }
-
-//         return true;
-//     }
-
-//     /**
-//      * Populates priorities for a project
-//      * @param Project\Project &$project
-//      * @return bool
-//      */
-//     private function priorities(Project\Project &$project) : bool
-//     {
-//         $url = '/' . $project->getPermalink() . '/tickets/priorities';
-
-//         $priorities = $this->get($url);
-
-//         if (!isset($priorities['ticketing-priority'])) {
-//             return false;
-//         }
-
-//         foreach($priorities['ticketing-priority'] as $priority) {
-//             if (!is_array($priority) || !isset($priority['id'])) {
-//                 continue;
-//             }
-
-//             $project->addTicketPriority(
-//                 new Ticket\Priority\Priority(
-//                     (int)$priority['id'],
-//                     (isset($priority['name']) && is_string($priority['name']))
-//                         ? $priority['name']
-//                         : null,
-//                     (isset($priority['colour']) && is_string($priority['colour']))
-//                         ? $priority['colour']
-//                         : null,
-//                     (isset($priority['default']) && is_string($priority['default']))
-//                         ? (bool)$priority['default']
-//                         : null,
-//                     (isset($priority['position']) && is_string($priority['position']))
-//                         ? (int)$priority['position']
-//                         : null
-//                 )
-//             );
-//         }
-
-//         return true;
-//     }
-
-//     /**
-//      * Populates statuses for a project
-//      * @param Project\Project &$project
-//      * @return bool
-//      */
-//     private function statuses(Project\Project &$project) : bool
-//     {
-//         $url = '/' . $project->getPermalink() . '/tickets/statuses';
-
-//         $statuses = $this->get($url);
-
-//         if (!isset($statuses['ticketing-status'])) {
-//             return false;
-//         }
-
-//         foreach($statuses['ticketing-status'] as $status) {
-//             if (!is_array($status) || !isset($status['id'])) {
-//                 continue;
-//             }
-
-//             $project->addTicketStatus(
-//                 new Ticket\Status\Status(
-//                     (int)$status['id'],
-//                     (isset($status['name']) && is_string($status['name']))
-//                         ? $status['name']
-//                         : null,
-//                     (isset($status['colour']) && is_string($status['colour']))
-//                         ? $status['colour']
-//                         : null,
-//                     (isset($status['treat-as-closed']) && is_string($status['treat-as-closed']))
-//                         ? filter_var($status['treat-as-closed'], FILTER_VALIDATE_BOOLEAN)
-//                         : null,
-//                     (isset($status['order']) && is_string($status['order']))
-//                         ? (int)$status['order']
-//                         : null
-//                 )
-//             );
-//         }
-
-//         return true;
-//     }
-
-//     /**
-//      * Populates types for a project
-//      * @param Project\Project &$project
-//      * @return bool
-//      */
-//     private function types(Project\Project &$project) : bool
-//     {
-//         $url = '/' . $project->getPermalink() . '/tickets/types';
-
-//         $types = $this->get($url);
-
-//         if (!isset($types['ticketing-type'])) {
-//             return false;
-//         }
-
-//         foreach($types['ticketing-type'] as $type) {
-//             if (!is_array($type) || !isset($type['id'])) {
-//                 continue;
-//             }
-
-//             $project->addTicketType(
-//                 new Ticket\Type\Type(
-//                     (int)$type['id'],
-//                     (isset($type['name']) && is_string($type['name']))
-//                         ? $type['name']
-//                         : null
-//                 )
-//             );
-//         }
-
-//         return true;
-//     }
-
-//     /**
-//      * Populates tickets on the given project
-//      * @param Project\Project &$project
-//      * @param int $pageNo
-//      * @return bool
-//      */
-//     public function tickets(Project\Project &$project, int $pageNo = 1) : bool
-//     {
-//         $url = '/' . $project->getPermalink() . '/tickets?page=' . $pageNo;
-
-//         $tickets = $this->get($url);
-
-//         if (!isset($tickets['ticket'])) {
-//             return false;
-//         }
-
-//         foreach($tickets['ticket'] as $ticket) {
-//             if (!is_array($ticket) || !isset($ticket['ticket-id'])) {
-//                 continue;
-//             }
-
-//             $assignee = isset($ticket['assignee-id']) ? $this->userCollection->searchById((int)$ticket['assignee-id']) : null;
-
-//             $reporter = isset($ticket['reporter-id']) ? $this->userCollection->searchById((int)$ticket['reporter-id']) : null;
-
-//             $category = $project->getTicketCategoryById((int)$ticket['category-id']);
-
-//             $priority = $project->getTicketPriorityById((int)$ticket['priority-id']);
-
-//             $status = $project->getTicketStatusById((int)$ticket['status-id']);
-
-//             $type = $project->getTicketTypeById((int)$ticket['type-id']);
-
-//             $estimatedTime = (isset($ticket['estimated-time']) && is_string($ticket['estimated-time']))
-//                 ? $ticket['estimated-time']
-//                 : null;
-
-//             $project->addTicket(
-//                 new Ticket\Ticket(
-//                     (int)$ticket['ticket-id'],
-//                     (int)$ticket['project-id'],
-//                     $ticket['summary'],
-//                     $reporter,
-//                     $assignee,
-//                     $category,
-//                     $priority,
-//                     $status,
-//                     $type,
-//                     $estimatedTime,
-//                     new \DateTime($ticket['updated-at']),
-//                     new \DateTime($ticket['created-at']),
-//                     (int)$ticket['total-time-spent']
-//                 )
-//             );
-//         }
-
-//         return true;
-//     }
-
-//     /**
-//      * Populates time sessions on the given project
-//      * @param Project\Project &$project
-//      * @param Period\Period $period
-//      * @return bool
-//      */
-//     public function times(Project\Project &$project, Period\Period $period) : bool
-//     {
-//         $url = '/' . $project->getPermalink() . '/time_sessions' . $period->getPeriod();
-
-//         $timeSessions = $this->get($url);
-
-//         if (!isset($timeSessions['time-session'])) {
-//             return false;
-//         }
-
-//         foreach($timeSessions['time-session'] as $timeSession) {
-//             if (!is_array($timeSession) || !isset($timeSession['id'])) {
-//                 continue;
-//             }
-
-//             $user = isset($timeSession['user-id']) ? $this->userCollection->searchById((int)$timeSession['user-id']) : null;
-
-//             $ticket = (!isset($timeSession['ticket-id']) || is_array($timeSession['ticket-id']))
-//                 ? null
-//                 : $project->getTickets()->searchById((int)$timeSession['ticket-id']);
-
-//             $timeSession = new TimeSession\TimeSession(
-//                 (int)$timeSession['id'],
-//                 $project,
-//                 $timeSession['summary'],
-//                 (int)$timeSession['minutes'],
-//                 new \DateTime($timeSession['session-date']),
-//                 $user,
-//                 $ticket,
-//                 new \DateTime($timeSession['updated-at']),
-//                 new \DateTime($timeSession['created-at'])
-//             );
-
-//             $project->addTimeSession($timeSession);
-
-//             if (isset($ticket)) {
-//                 $ticket->addTimeSession($timeSession);
-//             }
-
-//             if (isset($user)) {
-//                 $user->addTimeSession($timeSession);
-//             }
-//         }
-
-//         return true;
-//     }
-// }

@@ -130,17 +130,17 @@ export default class Project implements BaseModelInterface {
     }
 
     public getTicketCategories() {
-        return this.ticketCategoryCollection;
+      return this.ticketCategoryCollection;
     }
 
     public getTicketCategoryById(id: number) {
-        return this.ticketCategoryCollection.searchById(id);
+      return this.ticketCategoryCollection.searchById(id);
     }
 
     public addTicketCategory(ticketCategory: Category) {
-        this.ticketCategoryCollection.addticketCategory(ticketCategory);
+      this.ticketCategoryCollection.addTicketCategory(ticketCategory);
 
-        return this;
+      return this;
     }
 
     public getTicketPriorities() {

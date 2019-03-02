@@ -3,7 +3,11 @@ import Project from './Project';
 
 export default class ProjectCollection extends BaseCollection {
     addProject(project: Project) {
-        super.addItem(project)
+      super.add(project)
+    }
+
+    first(callback = null) {
+      return super.first(callback);
     }
 
     getActive() {

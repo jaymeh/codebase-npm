@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosInstance, AxiosResponse } from 'axios';
-var parseString = require('xml2js').parseString;
+var parser = require('fast-xml-parser');
 
 export default class CodebaseHQConnector {
     private apiUser: string;
@@ -35,9 +35,14 @@ export default class CodebaseHQConnector {
     }
 
     protected async get(endpointUrl: string) {
+      try {
         let response = await this.instance.get(this.apiUrl + endpointUrl);
         let arrayResponse = await this.responseToArray(response);
         return arrayResponse;
+      } catch(e) {
+        e
+      }
+
     }
 
     protected async post(endpointUrl: string, data: any) {
@@ -52,20 +57,12 @@ export default class CodebaseHQConnector {
      * @param string $response
      * @return array
      */
-    private responseToArray(response: AxiosResponse) : Promise<any>
+    private async responseToArray(response: AxiosResponse): Promise<any>
     {
         let data = response.data;
 
-        return new Promise((resolve, reject) => {
-          parseString(data, {trim: true, ignoreAttrs: true, explicitArray: false}, (err: any, result: any) => {
-            if(!err) {
-              // let items = JSON.stringify(result);
-              // console.log(items);
-              resolve(result);
-            }
+        var jsonObj = await parser.parse(data);
 
-            reject(err);
-          });
-        })
+        return jsonObj;
     }
 }
