@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosInstance, AxiosResponse } from 'axios';
-var parser = require('fast-xml-parser');
+const parser = require('fast-xml-parser');
 
 export default class CodebaseHQConnector {
     private apiUser: string;
@@ -18,17 +18,17 @@ export default class CodebaseHQConnector {
         this.apiKey = apiKey;
         this.apiHostname = apiHostname;
         this.apiUrl = apiUrl;
-        let config: AxiosRequestConfig = {
-            baseURL: this.apiUrl,
-            timeout: 15000,
-            headers: {
-                'Content-Type': 'application/xml',
-                'Accept': 'application/xml'
-            },
-            auth: {
-              username: apiUser,
-              password: apiKey
-            }
+        const config: AxiosRequestConfig = {
+          auth: {
+            password: apiKey,
+            username: apiUser
+          },
+          baseURL: this.apiUrl,
+          headers: {
+            'Accept': 'application/xml',
+            'Content-Type': 'application/xml'
+          },
+          timeout: 15000,
         };
 
         this.instance = axios.create(config);
@@ -36,8 +36,8 @@ export default class CodebaseHQConnector {
 
     protected async get(endpointUrl: string) {
       try {
-        let response = await this.instance.get(this.apiUrl + endpointUrl);
-        let arrayResponse = await this.responseToArray(response);
+        const response = await this.instance.get(this.apiUrl + endpointUrl);
+        const arrayResponse = await this.responseToArray(response);
         return arrayResponse;
       } catch(e) {
         throw new e();
@@ -47,8 +47,8 @@ export default class CodebaseHQConnector {
     protected async post(endpointUrl: string, data: any) {
       try {
         // Parse the data into xml.
-        let response = await this.instance.post(this.apiUrl + endpointUrl, data);
-        let arrayResponse = await this.responseToArray(response);
+        const response = await this.instance.post(this.apiUrl + endpointUrl, data);
+        const arrayResponse = await this.responseToArray(response);
         return arrayResponse;
       } catch(e) {
         throw new e();
@@ -62,9 +62,9 @@ export default class CodebaseHQConnector {
      */
     private async responseToArray(response: AxiosResponse): Promise<any>
     {
-        let data = response.data;
+        const data = response.data;
 
-        var jsonObj = await parser.parse(data);
+        const jsonObj = await parser.parse(data);
 
         return jsonObj;
     }

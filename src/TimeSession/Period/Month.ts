@@ -2,7 +2,7 @@ import Period from "./Period";
 
 export default class Month implements Period
 {
-    getPeriod()
+    public getPeriod()
     {
         return '/month';
     }

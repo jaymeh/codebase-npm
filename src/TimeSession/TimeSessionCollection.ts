@@ -7,7 +7,7 @@ export default class TimeSessionCollection extends BaseCollection {
      * @param TimeSession $timeSession
      * @return void
      */
-    addTimeSession(timeSession: TimeSession)
+    public addTimeSession(timeSession: TimeSession)
     {
         this.addItem(timeSession);
     }

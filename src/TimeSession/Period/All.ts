@@ -2,7 +2,7 @@ import Period from "./Period";
 
 export default class All implements Period
 {
-    getPeriod()
+    public getPeriod()
     {
         return '';
     }

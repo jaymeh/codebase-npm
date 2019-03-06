@@ -12,7 +12,7 @@ import Priority from "../Ticket/Priority/Priority";
 import Status from "../Ticket/Status/Status";
 import Type from "../Ticket/Type/Type";
 
-var js2xmlparser = require("js2xmlparser");
+const js2xmlparser = require("js2xmlparser");
 const decamelizeKeys = require('decamelize-keys');
 
 export default class Project implements BaseModelInterface {
@@ -55,8 +55,8 @@ export default class Project implements BaseModelInterface {
             this.ticketTypeCollection = new TypeCollection();
     }
 
-    convertToXml() {
-      let project = JSON.stringify(this);
+    public convertToXml() {
+      const project = JSON.stringify(this);
       let projectString = JSON.parse(project);
 
       delete this.ticketCollection

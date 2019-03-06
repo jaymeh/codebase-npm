@@ -7,7 +7,7 @@ export default class PriorityCollection extends BaseCollection {
      * @param Priority $priority
      * @return void
      */
-    addTicketPriority(priority: Priority)
+    public addTicketPriority(priority: Priority)
     {
         this.addItem(priority);
     }

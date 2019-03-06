@@ -7,7 +7,7 @@ export default class StatusCollection extends BaseCollection {
      * @param Status $status
      * @return void
      */
-    addTicketStatus(status: Status)
+    public addTicketStatus(status: Status)
     {
         this.addItem(status);
     }

@@ -11,7 +11,7 @@ import Day from './TimeSession/Period/Day';
 import Week from './TimeSession/Period/Week';
 import Month from './TimeSession/Period/Month';
 
-var codebase = CodebaseHQAccount;
+const codebase = CodebaseHQAccount;
 
 export {
     TimeSession,

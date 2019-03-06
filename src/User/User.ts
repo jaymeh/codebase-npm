@@ -2,7 +2,7 @@ import TimeSessionCollection from "../TimeSession/TimeSessionCollection";
 import TimeSession from "../TimeSession/TimeSession";
 import BaseModelInterface from "../BaseModelInterface";
 
-var js2xmlparser = require("js2xmlparser");
+const js2xmlparser = require("js2xmlparser");
 const decamelizeKeys = require('decamelize-keys');
 
 export default class User implements BaseModelInterface {
@@ -48,8 +48,8 @@ export default class User implements BaseModelInterface {
         this.timeSessionCollection = new TimeSessionCollection();
     }
 
-    convertToXml() {
-      let user = JSON.stringify(this);
+    public convertToXml() {
+      const user = JSON.stringify(this);
       let userString = JSON.parse(user);
 
       delete userString.timeSessionCollection;
@@ -63,7 +63,7 @@ export default class User implements BaseModelInterface {
      * Gets user id
      * @return int
      */
-    getId()
+    public getId()
     {
         return this.id;
     }
@@ -71,7 +71,7 @@ export default class User implements BaseModelInterface {
      * Gets username
      * @return null|string
      */
-    getUsername()
+    public getUsername()
     {
         return this.username;
     }
@@ -79,7 +79,7 @@ export default class User implements BaseModelInterface {
      * Gets company
      * @return null|string
      */
-    getCompany()
+    public getCompany()
     {
         return this.company;
     }
@@ -87,7 +87,7 @@ export default class User implements BaseModelInterface {
      * Gets email address
      * @return null|string
      */
-    getEmailAddress()
+    public getEmailAddress()
     {
         return this.emailAddress;
     }
@@ -95,7 +95,7 @@ export default class User implements BaseModelInterface {
      * Gets first name
      * @return null|string
      */
-    getFirstName()
+    public getFirstName()
     {
         return this.firstName;
     }
@@ -103,19 +103,19 @@ export default class User implements BaseModelInterface {
      * Gets last name
      * @return null|string
      */
-    getLastName()
+    public getLastName()
     {
         return this.lastName;
     }
 
-    getFullName() {
+    public getFullName() {
       return `${this.getFirstName()} ${this.getLastName()}`;
     }
     /**
      * Gets gravatar url
      * @return null|string
      */
-    getGravatarUrl()
+    public getGravatarUrl()
     {
         return this.gravatarUrl;
     }
@@ -123,7 +123,7 @@ export default class User implements BaseModelInterface {
      * Gets enabled
      * @return bool
      */
-    getEnabled()
+    public getEnabled()
     {
         return this.enabled;
     }
@@ -131,12 +131,12 @@ export default class User implements BaseModelInterface {
      * Returns time session collection
      * @return TimeSession\Collection
      */
-    getTimeSessions()
+    public getTimeSessions()
     {
         return this.timeSessionCollection;
     }
 
-    addTimeSession(timeSession: TimeSession)
+    public addTimeSession(timeSession: TimeSession)
     {
         this.timeSessionCollection.addTimeSession(timeSession);
         return this;

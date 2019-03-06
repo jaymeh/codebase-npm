@@ -27,35 +27,35 @@ export default class Priority {
      * Gets priority id
      * @return int
      */
-    getId() {
+    public getId() {
         return this.id;
     }
     /**
      * Gets priority name
      * @return null|string
      */
-    getName() {
+    public getName() {
         return this.name;
     }
     /**
      * Gets priority colour
      * @return null|string
      */
-    getColour() {
+    public getColour() {
         return this.colour;
     }
     /**
      * Gets priority default
      * @return null|bool
      */
-    getDefault() {
+    public getDefault() {
         return this.default;
     }
     /**
      * Gets priority position
      * @return null|int
      */
-    getPosition() {
+    public getPosition() {
         return this.position;
     }
 }

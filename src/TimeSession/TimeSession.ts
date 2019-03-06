@@ -3,7 +3,7 @@ import Ticket from "../Ticket/Ticket";
 import User from "../User/User";
 import BaseModelInterface from "../BaseModelInterface";
 
-var js2xmlparser = require("js2xmlparser");
+const js2xmlparser = require("js2xmlparser");
 const decamelizeKeys = require('decamelize-keys');
 
 export default class TimeSession implements BaseModelInterface {
@@ -51,8 +51,8 @@ export default class TimeSession implements BaseModelInterface {
         this.createdAt = createdAt;
     }
 
-    convertToXml() {
-        let timeSession = JSON.stringify(this);
+    public convertToXml() {
+        const timeSession = JSON.stringify(this);
         let sessionString = JSON.parse(timeSession);
         sessionString.project = this.project.getId();
         sessionString.userId = null;
@@ -77,63 +77,63 @@ export default class TimeSession implements BaseModelInterface {
      * Gets Time Session id
      * @return int
      */
-    getId() {
+    public getId() {
         return this.id;
     }
     /**
      * Gets Time Session Project
      * @return Project\Project
      */
-    getProject() {
+    public getProject() {
         return this.project;
     }
     /**
      * Gets Time Session summary
      * @return string
      */
-    getSummary() {
+    public getSummary() {
         return this.summary;
     }
     /**
      * Gets Time Session minutes
      * @return int
      */
-    getMinutes() {
+    public getMinutes() {
         return this.minutes;
     }
     /**
      * Gets Time Session date
      * @return \DateTime
      */
-    getSessionDate() {
+    public getSessionDate() {
         return this.sessionDate;
     }
     /**
      * Gets Time Session User
      * @return null|User\User
      */
-    getUser() {
+    public getUser() {
         return this.user;
     }
     /**
      * Gets Time Session Ticket
      * @return null|Ticket\Ticket
      */
-    getTicket() {
+    public getTicket() {
         return this.ticket;
     }
     /**
      * Gets Time Session updated date
      * @return \DateTime
      */
-    getUpdatedAt() {
+    public getUpdatedAt() {
         return this.updatedAt;
     }
     /**
      * Gets Time Session created date
      * @return \DateTime
      */
-    getCreatedAt() {
+    public getCreatedAt() {
         return this.createdAt;
     }
 }

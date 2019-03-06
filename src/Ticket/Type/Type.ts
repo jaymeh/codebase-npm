@@ -13,14 +13,14 @@ export default class Type {
      * Gets type id
      * @return number
      */
-    getId() {
+    public getId() {
         return this.id;
     }
     /**
      * Gets type name
      * @return null|string
      */
-    getName() {
+    public getName() {
         return this.name;
     }
 }

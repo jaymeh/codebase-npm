@@ -18,14 +18,14 @@ export default class Category {
      * Gets category id
      * @return int
      */
-    getId() {
+    public getId() {
         return this.id;
     }
     /**
      * Gets category name
      * @return string
      */
-    getName() {
+    public getName() {
         return this.name;
     }
 }

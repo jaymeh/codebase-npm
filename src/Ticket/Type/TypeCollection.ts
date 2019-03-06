@@ -7,7 +7,7 @@ export default class TypeCollection extends BaseCollection {
      * @param Type $status
      * @return void
      */
-    addTicketType(type: Type) {
+    public addTicketType(type: Type) {
         this.addItem(type);
     }
 }

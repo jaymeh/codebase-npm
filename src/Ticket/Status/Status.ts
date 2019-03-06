@@ -22,35 +22,35 @@ export default class Status {
      * Gets status id
      * @return int
      */
-    getId() {
+    public getId() {
         return this.id;
     }
     /**
      * Gets status name
      * @return null|string
      */
-    getName() {
+    public getName() {
         return this.name;
     }
     /**
      * Gets status colour
      * @return null|string
      */
-    getColour() {
+    public getColour() {
         return this.colour;
     }
     /**
      * Returns whether the status is closed or not
      * @return null|bool
      */
-    isClosed() {
+    public isClosed() {
         return this.treatAsClosed;
     }
     /**
      * Gets status order
      * @return null|int
      */
-    getOrder() {
+    public getOrder() {
         return this.order;
     }
 }

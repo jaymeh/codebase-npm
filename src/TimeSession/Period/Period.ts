@@ -1,3 +1,3 @@
 export default interface Period {
-    getPeriod(): string;
+  getPeriod(): string;
 }

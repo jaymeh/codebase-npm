@@ -7,7 +7,7 @@ import TimeSession from "../TimeSession/TimeSession";
 import User from "../User/User";
 import BaseModelInterface from "../BaseModelInterface";
 
-var js2xmlparser = require("js2xmlparser");
+const js2xmlparser = require("js2xmlparser");
 const decamelizeKeys = require('decamelize-keys');
 
 export default class Ticket implements BaseModelInterface {
@@ -57,8 +57,8 @@ export default class Ticket implements BaseModelInterface {
         this.timeSessionCollection = new TimeSessionCollection();
     }
 
-    convertToXml() {
-      let ticket = JSON.stringify(this);
+    public convertToXml() {
+      const ticket = JSON.stringify(this);
       let ticketString = JSON.parse(ticket);
 
       if(this.reporter) {
@@ -98,103 +98,103 @@ export default class Ticket implements BaseModelInterface {
      * Gets Ticket id
      * @return number
      */
-    getId() {
+    public getId() {
         return this.id;
     }
     /**
      * Gets Ticket Project ID
      * @return number
      */
-    getProjectId() {
+    public getProjectId() {
         return this.projectId;
     }
     /**
      * Gets Ticket summary
      * @return string
      */
-    getSummary() {
+    public getSummary() {
         return this.summary;
     }
     /**
      * Gets Ticket Reporter
      * @return null|User
      */
-    getReporter() {
+    public getReporter() {
         return this.reporter;
     }
     /**
      * Gets Ticket Assignee
      * @return null|User
      */
-    getAssignee() {
+    public getAssignee() {
         return this.assignee;
     }
     /**
      * Gets Ticket category
      * @return null|Category
      */
-    getCategory() {
+    public getCategory() {
         return this.category;
     }
     /**
      * Gets Ticket priority
      * @return null|Priority\Priority
      */
-    getPriority() {
+    public getPriority() {
         return this.priority;
     }
     /**
      * Gets Ticket status
      * @return null|Status\Status
      */
-    getStatus() {
+    public getStatus() {
         return this.status;
     }
     /**
      * Gets Ticket type
      * @return null|Type\Type
      */
-    getType() {
+    public getType() {
         return this.type;
     }
     /**
      * Gets Ticket estimated time
      * @return null|int
      */
-    getEstimate() {
+    public getEstimate() {
         return this.estimatedTime;
     }
     /**
      * Gets Ticket total time spent
      * @return int
      */
-    getTotalTimeSpent() {
+    public getTotalTimeSpent() {
         return this.totalTimeSpent;
     }
     /**
      * Gets Ticket updated date
      * @return \DateTime
      */
-    getUpdatedAt() {
+    public getUpdatedAt() {
         return this.updatedAt;
     }
     /**
      * Gets Ticket created date
      * @return \DateTime
      */
-    getCreatedAt() {
+    public getCreatedAt() {
         return this.createdAt;
     }
     /**
      * Returns time session collection
      * @return TimeSession\Collection
      */
-    getTimeSessions()
+    public getTimeSessions()
     {
         return this.timeSessionCollection;
     }
 
-    addTimeSession(timeSession: TimeSession)
+    public addTimeSession(timeSession: TimeSession)
     {
         this.timeSessionCollection.addTimeSession(timeSession);
         return this;

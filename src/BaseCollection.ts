@@ -1,11 +1,7 @@
 // @ts-ignore
-let Collection = require('collectionsjs');
+const Collection = require('collectionsjs');
 
 export default abstract class BaseCollection extends Collection {
-    all() {
-        return super.all();
-    }
-
     public addItem(value: any) {
         super.push(value);
     }

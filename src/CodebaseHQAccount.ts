@@ -27,13 +27,13 @@ export default class CodebaseHQAccount extends CodebaseHQConnector {
    * Returns a collection of all projects
    * @return Project\Collection
    */
-  async projects(): Promise<ProjectCollection>
+  public async projects(): Promise<ProjectCollection>
   {
-      let { projects } = await this.get('/projects');
+      const { projects } = await this.get('/projects');
 
       if(projects) {
         await forEach(projects.project, async (project: any) => {
-          let ProjectItem = new Project(
+          const ProjectItem = new Project(
             project['project-id'],
             project.name,
             project.status,
@@ -60,14 +60,14 @@ export default class CodebaseHQAccount extends CodebaseHQConnector {
    * @param string $permalink
    * @return Project\Project
    */
-  async project(permalink: string) : Promise<Project> {
-    let {project} = await this.get(`/${permalink}`);
+  public async project(permalink: string) : Promise<Project> {
+    const {project} = await this.get(`/${permalink}`);
 
-    let projectItem = new Project(
+    const projectItem = new Project(
       project['project-id'],
-      project['name'],
-      project['status'],
-      project['permalink'],
+      project.name,
+      project.status,
+      project.permalink,
       project['total-tickets'],
       project['open-tickets'],
       project['closed-tickets']
@@ -81,23 +81,23 @@ export default class CodebaseHQAccount extends CodebaseHQConnector {
     return projectItem;
   }
 
-      /**
+  /**
    * Returns a collection of all users
    * @return User\Collection
    */
-  async users(): Promise<UserCollection> {
-    let {users} = await this.get('/users');
+  public async users(): Promise<UserCollection> {
+    const {users} = await this.get('/users');
 
     if(!users) {
       return this.userCollection;
     }
 
     await forEach(users.user, async (user: any) => {
-      let userItem = new User(
-        user['id'],
-        user['enabled'] ? true : false,
-        user['username'] ? user['username'] : null,
-        user['company'] ? user['company'] : null,
+      const userItem = new User(
+        user.id,
+        user.enabled ? true : false,
+        user.username ? user.username : null,
+        user.company ? user.company : null,
         user['email-address'] ? user['email-address'] : null,
         user['first-name'] ? user['first-name'] : null,
         user['last-name'] ? user['last-name'] : null,
@@ -116,9 +116,9 @@ export default class CodebaseHQAccount extends CodebaseHQConnector {
    * @param Project\Project &$project
    * @return bool
    */
-  async categories(project: Project) : Promise<boolean>
+  public async categories(project: Project) : Promise<boolean>
   {
-    let url = `/${project.getPermalink()}/tickets/categories`;
+    const url = `/${project.getPermalink()}/tickets/categories`;
 
     let categories = await this.get(url);
 
@@ -133,131 +133,13 @@ export default class CodebaseHQAccount extends CodebaseHQConnector {
     }
 
     categories['ticketing-category'].forEach((category: any) => {
-      if(!category['id']) {
+      if(!category.id) {
         return;
       }
 
-      let categoryItem = new Category(category['id'], category['name']);
+      const categoryItem = new Category(category.id, category.name);
 
       project.addTicketCategory(categoryItem);
-    })
-
-    return true;
-  }
-
-  /**
-   * Populates priorities for a project
-   * @param Project\Project &$project
-   * @return bool
-   */
-  private async priorities(project: Project) : Promise<boolean>
-  {
-    let url = `/${project.getPermalink()}/tickets/priorities`;
-
-    let priorities = await this.get(url);
-
-    if(!priorities) {
-      return false;
-    }
-
-    priorities = priorities['ticketing-priorities'];
-
-    if (!priorities['ticketing-priority'] || typeof priorities['ticketing-priority'] !== 'object') {
-        return false;
-    }
-
-    priorities['ticketing-priority'].forEach((priority: any) => {
-      if(!priority['id']) {
-        return;
-      }
-
-      project.addTicketPriority(
-        new Priority(
-          priority['id'],
-          priority['name'] ? priority['name'] : null,
-          priority['colour'] ? priority['colour'] : null,
-          priority['default'] ? priority['default'] : null,
-          priority['position'] ? priority['position'] : null
-        )
-      );
-    })
-
-    return true;
-  }
-
-  /**
-   * Populates statuses for a project
-   * @param Project\Project &$project
-   * @return bool
-   */
-  private async statuses(project: Project) : Promise<boolean>
-  {
-    let url = `/${project.getPermalink()}/tickets/statuses`;
-
-    let statuses = await this.get(url);
-
-    if(!statuses) {
-      return false;
-    }
-
-    statuses = statuses['ticketing-statuses']
-
-    if (!statuses['ticketing-status'] || typeof statuses['ticketing-status'] !== 'object') {
-          return false;
-    }
-
-    statuses['ticketing-status'].forEach((status: any) => {
-      if (typeof status !== 'object' || !status['id']) {
-        return;
-      }
-
-      project.addTicketStatus(
-        new Status(
-          status['id'],
-          status['name'] ? status['name'] : null,
-          status['colour'] ? status['colour'] : null,
-          status['treat-as-closed'] ? true : null,
-          status['order'] ? status['order'] : null
-        )
-      );
-    })
-
-    return true;
-  }
-
-
-  /**
-   * Populates types for a project
-   * @param Project\Project &$project
-   * @return bool
-   */
-  private async types(project: Project) : Promise<boolean>
-  {
-    let url = `/${project.getPermalink()}/tickets/types`;
-
-    let types = await this.get(url);
-
-    if(!types) {
-      return false;
-    }
-
-    types = types['ticketing-types'];
-
-    if (!types['ticketing-type'] || typeof types['ticketing-type'] !== 'object') {
-        return false;
-    }
-
-    types['ticketing-type'].forEach((type: any) => {
-      if (!type['id'] || typeof type !== 'object') {
-        return;
-      }
-
-      project.addTicketType(
-        new Type(
-          type['id'],
-          type['name'] ? type['name'] : null
-        )
-      );
     })
 
     return true;
@@ -271,15 +153,15 @@ export default class CodebaseHQAccount extends CodebaseHQConnector {
    */
   public async tickets(project: Project, pageNo: number = 1) : Promise<boolean>
   {
-    let url = `/${project.getPermalink()}/tickets?page=${pageNo}`;
+    const url = `/${project.getPermalink()}/tickets?page=${pageNo}`;
 
-    let {tickets} = await this.get(url);
+    const {tickets} = await this.get(url);
 
     if(!tickets) {
       return false;
     }
 
-    if(!tickets['ticket']) {
+    if(!tickets.ticket) {
       return false;
     }
 
@@ -288,25 +170,19 @@ export default class CodebaseHQAccount extends CodebaseHQConnector {
         return;
       }
 
-      let assignee = ticket['assignee-id'] ? this.userCollection.searchById(ticket['assignee-id']) : null;
-
-      let reporter = ticket['reporter-id'] ? this.userCollection.searchById(ticket['reporter-id']) : null;
-
-      let category = project.getTicketCategoryById(ticket['category-id']);
-
-      let priority = project.getTicketPriorityById(ticket['priority-id']);
-
-      let status = project.getTicketStatusById(ticket['status-id']);
-
-      let type = project.getTicketTypeById(ticket['type-id']);
-
-      let estimatedTime = ticket['estimated-time'] && typeof ticket['estimated-time'] == 'string' ? ticket['estimated-time'] : null;
+      const assignee = ticket['assignee-id'] ? this.userCollection.searchById(ticket['assignee-id']) : null;
+      const reporter = ticket['reporter-id'] ? this.userCollection.searchById(ticket['reporter-id']) : null;
+      const category = project.getTicketCategoryById(ticket['category-id']);
+      const priority = project.getTicketPriorityById(ticket['priority-id']);
+      const status = project.getTicketStatusById(ticket['status-id']);
+      const type = project.getTicketTypeById(ticket['type-id']);
+      const estimatedTime = ticket['estimated-time'] && typeof ticket['estimated-time'] === 'string' ? ticket['estimated-time'] : null;
 
       project.addTicket(
         new Ticket(
             ticket['ticket-id'],
             ticket['project-id'],
-            ticket['summary'],
+            ticket.summary,
             new Date(ticket['updated-at']),
             new Date(ticket['created-at']),
             ticket['total-time-spent'],
@@ -332,7 +208,7 @@ export default class CodebaseHQAccount extends CodebaseHQConnector {
    */
   public async times(project: Project, period: Period) : Promise<boolean>
   {
-    let url = `/${project.getPermalink()}/time_sessions${period.getPeriod()}`;
+    const url = `/${project.getPermalink()}/time_sessions${period.getPeriod()}`;
 
     let timeSessions = await this.get(url);
     timeSessions = timeSessions['time-sessions'];
@@ -346,18 +222,18 @@ export default class CodebaseHQAccount extends CodebaseHQConnector {
     }
 
     timeSessions['time-session'].forEach((timeSession: any) => {
-      if (!timeSession['id'] || typeof timeSession !== 'object') {
+      if (!timeSession.id || typeof timeSession !== 'object') {
         return
       }
 
-      let user = timeSession['user-id'] ? this.userCollection.searchById(timeSession['user-id']) : null;
-      let ticket = (!timeSession['ticket-id']) || typeof timeSession['ticket-id'] == 'object' ? null : project.getTickets().searchById(timeSession['ticket-id']);
+      const user = timeSession['user-id'] ? this.userCollection.searchById(timeSession['user-id']) : null;
+      const ticket = (!timeSession['ticket-id']) || typeof timeSession['ticket-id'] === 'object' ? null : project.getTickets().searchById(timeSession['ticket-id']);
 
-      let newTimeSession = new TimeSession(
-        timeSession['id'],
+      const newTimeSession = new TimeSession(
+        timeSession.id,
         project,
-        timeSession['summary'],
-        timeSession['minutes'],
+        timeSession.summary,
+        timeSession.minutes,
         new Date(timeSession['session-date']),
         new Date(timeSession['created-at']),
         new Date(timeSession['updated-at']),
@@ -374,6 +250,124 @@ export default class CodebaseHQAccount extends CodebaseHQConnector {
       if (user) {
           user.addTimeSession(newTimeSession);
       }
+    })
+
+    return true;
+  }
+
+  /**
+   * Populates priorities for a project
+   * @param Project\Project &$project
+   * @return bool
+   */
+  private async priorities(project: Project) : Promise<boolean>
+  {
+    const url = `/${project.getPermalink()}/tickets/priorities`;
+
+    let priorities = await this.get(url);
+
+    if(!priorities) {
+      return false;
+    }
+
+    priorities = priorities['ticketing-priorities'];
+
+    if (!priorities['ticketing-priority'] || typeof priorities['ticketing-priority'] !== 'object') {
+        return false;
+    }
+
+    priorities['ticketing-priority'].forEach((priority: any) => {
+      if(!priority.id) {
+        return;
+      }
+
+      project.addTicketPriority(
+        new Priority(
+          priority.id,
+          priority.name ? priority.name : null,
+          priority.colour ? priority.colour : null,
+          priority.default ? priority.default : null,
+          priority.position ? priority.position : null
+        )
+      );
+    })
+
+    return true;
+  }
+
+  /**
+   * Populates statuses for a project
+   * @param Project\Project &$project
+   * @return bool
+   */
+  private async statuses(project: Project) : Promise<boolean>
+  {
+    const url = `/${project.getPermalink()}/tickets/statuses`;
+
+    let statuses = await this.get(url);
+
+    if(!statuses) {
+      return false;
+    }
+
+    statuses = statuses['ticketing-statuses']
+
+    if (!statuses['ticketing-status'] || typeof statuses['ticketing-status'] !== 'object') {
+          return false;
+    }
+
+    statuses['ticketing-status'].forEach((status: any) => {
+      if (typeof status !== 'object' || !status.id) {
+        return;
+      }
+
+      project.addTicketStatus(
+        new Status(
+          status.id,
+          status.name ? status.name : null,
+          status.colour ? status.colour : null,
+          status['treat-as-closed'] ? true : null,
+          status.order ? status.order : null
+        )
+      );
+    })
+
+    return true;
+  }
+
+
+  /**
+   * Populates types for a project
+   * @param Project\Project &$project
+   * @return bool
+   */
+  private async types(project: Project) : Promise<boolean>
+  {
+    const url = `/${project.getPermalink()}/tickets/types`;
+
+    let types = await this.get(url);
+
+    if(!types) {
+      return false;
+    }
+
+    types = types['ticketing-types'];
+
+    if (!types['ticketing-type'] || typeof types['ticketing-type'] !== 'object') {
+        return false;
+    }
+
+    types['ticketing-type'].forEach((type: any) => {
+      if (!type.id || typeof type !== 'object') {
+        return;
+      }
+
+      project.addTicketType(
+        new Type(
+          type.id,
+          type.name ? type.name : null
+        )
+      );
     })
 
     return true;

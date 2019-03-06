@@ -7,7 +7,7 @@ export default class CategoryCollection extends BaseCollection {
      * @param Category $category
      * @return void
      */
-    addTicketCategory(category: Category)
+    public addTicketCategory(category: Category)
     {
         this.addItem(category);
     }

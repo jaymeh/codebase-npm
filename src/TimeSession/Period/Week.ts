@@ -1,8 +1,8 @@
 import Period from "./Period";
 
-export default class All implements Period
+export default class Week implements Period
 {
-    getPeriod()
+    public getPeriod()
     {
         return '/week';
     }

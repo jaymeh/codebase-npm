@@ -2,20 +2,20 @@ import BaseCollection from '../BaseCollection';
 import Project from './Project';
 
 export default class ProjectCollection extends BaseCollection {
-    addProject(project: Project) {
-      super.add(project)
+    public addProject(project: Project) {
+      super.addItem(project)
     }
 
-    first(callback = null) {
+    public first(callback = null) {
       return super.first(callback);
     }
 
-    getActive() {
-        let activeCollection = new ProjectCollection();
-        let results = this.all();
+    public getActive() {
+        const activeCollection = new ProjectCollection();
+        const results = this.all();
 
         results.forEach((project: Project) => {
-            if(project.getStatus() == 'active') {
+            if(project.getStatus() === 'active') {
                 activeCollection.addProject(project);
             }
         })
@@ -23,16 +23,16 @@ export default class ProjectCollection extends BaseCollection {
         return activeCollection;
     }
 
-    searchByName(searchTerm: string, exactMatchOnly: boolean = false)
+    public searchByName(searchTerm: string, exactMatchOnly: boolean = false)
     {
-        let searchResultCollection = new ProjectCollection();
-        let lowerCaseSearchTerm = searchTerm.toLowerCase();
-        let results = this.all();
+        const searchResultCollection = new ProjectCollection();
+        const lowerCaseSearchTerm = searchTerm.toLowerCase();
+        const results = this.all();
         results.forEach((project: Project) => {
-            let lowerCaseProjectName = project.getName().toLowerCase();
+            const lowerCaseProjectName = project.getName().toLowerCase();
             if(
                 (!exactMatchOnly && lowerCaseProjectName.indexOf(lowerCaseSearchTerm) !== -1) ||
-                (exactMatchOnly && lowerCaseProjectName == lowerCaseSearchTerm)
+                (exactMatchOnly && lowerCaseProjectName === lowerCaseSearchTerm)
             ) {
                 searchResultCollection.addProject(project);
             }

@@ -2,14 +2,15 @@ import BaseCollection from "../BaseCollection";
 import Ticket from "./Ticket";
 
 export default class TicketCollection extends BaseCollection {
-    readonly STATUS_CLOSED = true;
-    readonly STATUS_OPEN = false;
+    private readonly STATUS_CLOSED = true;
+    private readonly STATUS_OPEN = false;
+
     /**
      * Adds a ticket to the collection
      * @param Ticket $ticket
      * @return void
      */
-    addTicket(ticket: Ticket)
+    public addTicket(ticket: Ticket)
     {
         this.addItem(ticket);
     }
@@ -17,7 +18,7 @@ export default class TicketCollection extends BaseCollection {
      * Returns a new collection of open tickets
      * @return Collection
      */
-    getOpen()
+    public getOpen()
     {
         return this.getByStatus(this.STATUS_OPEN);
     }
@@ -25,7 +26,7 @@ export default class TicketCollection extends BaseCollection {
      * Returns a new collection of closed tickets
      * @return Collection
      */
-    getClosed()
+    public getClosed()
     {
         return this.getByStatus(this.STATUS_CLOSED);
     }
@@ -36,11 +37,11 @@ export default class TicketCollection extends BaseCollection {
      */
     private getByStatus(returnClosed: boolean)
     {
-        let collection = new TicketCollection();
-        let allTickets = this.all();
+        const collection = new TicketCollection();
+        const allTickets = this.all();
         allTickets.forEach((ticket: Ticket) => {
-            let status = ticket.getStatus();
-            if(status && status.isClosed() == returnClosed) {
+            const status = ticket.getStatus();
+            if(status && status.isClosed() === returnClosed) {
                 collection.addTicket(ticket);
             }
         });
