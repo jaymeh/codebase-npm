@@ -40,7 +40,7 @@ export default class CodebaseHQConnector {
         const arrayResponse = await this.responseToArray(response);
         return arrayResponse;
       } catch(e) {
-        throw new e();
+        e;
       }
     }
 
@@ -51,7 +51,7 @@ export default class CodebaseHQConnector {
         const arrayResponse = await this.responseToArray(response);
         return arrayResponse;
       } catch(e) {
-        throw new e();
+        e;
       }
     }
 
