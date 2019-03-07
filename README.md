@@ -20,7 +20,7 @@ There is also an examples project with some demos to help understand the code an
 In order to connect to and query the codebase API you need to create a CodebaseHQAccount object
 
 ```js
-import codebase from 'codebase-npm';
+import { codebase } from 'codebase-npm';
 let codebaseConnection = new codebase(apiUser, apiKey, apiHostname);
 ```
 
