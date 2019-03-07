@@ -32,11 +32,11 @@
   "homepage": "https://github.com/jaymeh/codebase-npm#readme",
   "devDependencies": {
     "@types/jest": "^24.0.9",
-    "@types/node": "^11.9.5",
-    "jest": "^24.1.0",
+    "@types/node": "^11.10.5",
+    "jest": "^24.3.0",
     "prettier": "^1.16.4",
     "ts-jest": "^24.0.0",
-    "tslint": "^5.13.0",
+    "tslint": "^5.13.1",
     "tslint-config-prettier": "^1.18.0",
     "typescript": "^3.3.3333"
   },
