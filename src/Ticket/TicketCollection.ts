@@ -2,8 +2,8 @@ import BaseCollection from "../BaseCollection";
 import Ticket from "./Ticket";
 
 export default class TicketCollection extends BaseCollection {
-    private readonly STATUS_CLOSED = true;
-    private readonly STATUS_OPEN = false;
+    private STATUS_CLOSED = true;
+    private STATUS_OPEN = false;
 
     /**
      * Adds a ticket to the collection
