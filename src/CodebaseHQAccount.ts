@@ -12,7 +12,7 @@ import { TimeSession } from ".";
 import Ticket from "./Ticket/Ticket";
 const { forEach } = require('p-iteration');
 
-export default class CodebaseHQAccount extends CodebaseHQConnector {
+export class CodebaseHQAccount extends CodebaseHQConnector {
   private projectCollection: ProjectCollection;
   private userCollection: UserCollection;
 

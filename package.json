@@ -1,6 +1,6 @@
 {
   "name": "codebase-npm",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "NPM Package that interacts with CodebaseHQ",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

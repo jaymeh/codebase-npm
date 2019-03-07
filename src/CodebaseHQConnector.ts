@@ -14,6 +14,14 @@ export default class CodebaseHQConnector {
         apiHostname: string,
         apiUrl: string = 'https://api3.codebasehq.com'
     ) {
+        if(!apiUser || typeof apiUser === 'undefined') {
+          throw new Error('Invalid api user provided.')
+        }
+
+        if(!apiKey || typeof apiKey === 'undefined') {
+          throw new Error('Invalid api user provided.')
+        }
+
         this.apiUser = apiUser;
         this.apiKey = apiKey;
         this.apiHostname = apiHostname;
@@ -40,7 +48,7 @@ export default class CodebaseHQConnector {
         const arrayResponse = await this.responseToArray(response);
         return arrayResponse;
       } catch(e) {
-        throw new e.toString();
+        throw new Error('Cannot get data from ' + endpointUrl);
       }
     }
 
@@ -51,7 +59,7 @@ export default class CodebaseHQConnector {
         const arrayResponse = await this.responseToArray(response);
         return arrayResponse;
       } catch(e) {
-        throw new e.toString();
+        throw new Error('Cannot post to ' + endpointUrl);
       }
     }
 
