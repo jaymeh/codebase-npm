@@ -43,10 +43,14 @@ export class CodebaseHQAccount extends CodebaseHQConnector {
             project['closed-tickets']
           );
 
-          await this.categories(ProjectItem);
-          await this.priorities(ProjectItem);
-          await this.statuses(ProjectItem);
-          await this.types(ProjectItem);
+          // For now we will disable this.
+
+          // await this.categories(ProjectItem);
+          // await this.priorities(ProjectItem);
+          // await this.statuses(ProjectItem);
+          // await this.types(ProjectItem);
+
+
 
           await this.projectCollection.addProject(ProjectItem);
         });

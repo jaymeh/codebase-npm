@@ -40,4 +40,6 @@ export default class ProjectCollection extends BaseCollection {
 
         return searchResultCollection;
     }
+
+    // TODO: Add a search by ids. Just gives us a list of all ids.
 }
