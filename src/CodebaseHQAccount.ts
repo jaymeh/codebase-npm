@@ -215,6 +215,11 @@ export class CodebaseHQAccount extends CodebaseHQConnector {
         return false;
     }
 
+    if(typeof timeSessions['time-session'].length === 'undefined') {
+      let session = timeSessions['time-session'];
+      timeSessions['time-session'] = [session];
+    }
+
     timeSessions['time-session'].forEach((timeSession: any) => {
       if (!timeSession.id || typeof timeSession !== 'object') {
         return
