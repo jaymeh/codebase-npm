@@ -27,30 +27,24 @@ export class CodebaseHQAccount extends CodebaseHQConnector {
    * Returns a collection of all projects
    * @return Project\Collection
    */
-  public async projects(): Promise<ProjectCollection>
-  {
-      const { projects } = await this.get('/projects');
+  public async projects(): Promise<ProjectCollection> {
+    const { projects } = await this.get('/projects');
 
-      if(projects) {
-        await forEach(projects.project, async (project: any) => {
-          const ProjectItem = new Project(
-            project['project-id'],
-            project.name,
-            project.status,
-            project.permalink,
-            project['total-tickets'],
-            project['open-tickets'],
-            project['closed-tickets']
-          );
+    if (projects) {
+      await forEach(projects.project, async (project: any) => {
+        const ProjectItem = new Project(
+          project['project-id'],
+          project.name,
+          project.status,
+          project.permalink,
+          project['total-tickets'],
+          project['open-tickets'],
+          project['closed-tickets'],
+        );
 
-          await this.categories(ProjectItem);
-          await this.priorities(ProjectItem);
-          await this.statuses(ProjectItem);
-          await this.types(ProjectItem);
-
-          await this.projectCollection.addProject(ProjectItem);
-        });
-      }
+        await this.projectCollection.addProject(ProjectItem);
+      });
+    }
 
       return this.projectCollection;
   }
@@ -260,8 +254,7 @@ export class CodebaseHQAccount extends CodebaseHQConnector {
    * @param Project\Project &$project
    * @return bool
    */
-  private async priorities(project: Project) : Promise<boolean>
-  {
+  public async priorities(project: Project): Promise<boolean> {
     const url = `/${project.getPermalink()}/tickets/priorities`;
 
     let priorities = await this.get(url);
@@ -300,8 +293,7 @@ export class CodebaseHQAccount extends CodebaseHQConnector {
    * @param Project\Project &$project
    * @return bool
    */
-  private async statuses(project: Project) : Promise<boolean>
-  {
+  public async statuses(project: Project): Promise<boolean> {
     const url = `/${project.getPermalink()}/tickets/statuses`;
 
     let statuses = await this.get(url);
@@ -341,8 +333,7 @@ export class CodebaseHQAccount extends CodebaseHQConnector {
    * @param Project\Project &$project
    * @return bool
    */
-  private async types(project: Project) : Promise<boolean>
-  {
+  public async types(project: Project): Promise<boolean> {
     const url = `/${project.getPermalink()}/tickets/types`;
 
     let types = await this.get(url);
